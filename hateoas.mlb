@@ -5,6 +5,7 @@ local
 in
   src/counter.sml
   src/contacts.sml
+  src/blocks.sml
   src/hateoas.sml
   src/main.sml
 end

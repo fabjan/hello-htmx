@@ -15,7 +15,7 @@
  *)
 
 (*
- * A simple HTTP service.
+ * A simple HTMX app.
  *)
 
 fun viewIndex () =
@@ -24,6 +24,7 @@ fun viewIndex () =
     "<ul>" ^
     "<li><a href=\"/counter\">Counter</a></li>" ^
     "<li><a href=\"/contacts\">Contacts</a></li>" ^
+    "<li><a href=\"/blocks\">Blocks</a></li>" ^
     "</ul>"
   )
 
@@ -31,6 +32,7 @@ fun router (req : request): response =
   case (#method req, String.tokens (eq #"/") (#path req)) of
     (_, "counter"::_) => routeCounter req
   | (_, "contacts"::_) => routeContacts req
+  | (_, "blocks"::_) => routeBlocks req
   | ("GET", []) => response 200 "text/html" (viewIndex ())
   | _ => response 404 "text/plain" "Not found\n"
 
