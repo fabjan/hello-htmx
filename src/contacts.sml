@@ -34,8 +34,9 @@ fun editContact { name, email } (errors : string list) =
 (* FIXME: sanitize *)
 fun viewContact { name, email } =
   "<li id=\"contact-" ^ name ^ "\">" ^
-    "<span hx-target=\"#contact-" ^ name ^ "\" hx-swap=\"outerHTML\" hx-delete=\"/contacts/" ^ name ^ "\" style=\"cursor: pointer\">&#x1F9F9;</span>" ^
+    "<span hx-indicator=\"#ci-" ^ name ^ "\" hx-target=\"#contact-" ^ name ^ "\" hx-swap=\"outerHTML\" hx-delete=\"/contacts/" ^ name ^ "\" style=\"cursor: pointer\">&#x1F9F9;</span>" ^
     name ^ ", " ^ email ^
+    indicatorSVG ("ci-" ^ name) ^
   "</li>"
 
 fun viewContacts contacts =
@@ -97,6 +98,8 @@ fun deleteContact name =
   let
     val contacts = !theContacts
     val contacts' = List.filter (fn c => not (eq (#name c) name)) contacts
+    (* hack to simulate slow response, showcasing interactivity *)
+    val _ = OS.Process.sleep (Time.fromMilliseconds 1337)
   in
     if List.length contacts = List.length contacts'
     then response 404 "text/plain" "Not found\n"
