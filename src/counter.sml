@@ -13,17 +13,10 @@ fun incrementCounter incr =
 fun viewCounter (Count i) = "Count: " ^ Int.toString i
 
 fun viewPage counter =
-  "<!DOCTYPE html>" ^
-  "<html>" ^
-  "<head>" ^
-  "<title>Counter</title>" ^
-  "<script src=\"https://unpkg.com/htmx.org@1.9.12\" integrity=\"sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2\" crossorigin=\"anonymous\"></script>" ^
-  "</head>" ^
-  "<body>" ^
-  "<div id=\"counter\">" ^ viewCounter counter ^ "</div>" ^
-  "<button hx-post=\"/counter\" hx-target=\"#counter\">Increment</button>" ^
-  "</body>" ^
-  "</html>"
+  renderHTML "Counter" (
+    "<p id=\"counter\">" ^ viewCounter counter ^ "</p>" ^
+    "<button hx-post=\"/counter\" hx-target=\"#counter\">Increment</button>"
+  )
 
 fun htmlResponse s = response 200 "text/html" s
 

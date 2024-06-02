@@ -19,16 +19,12 @@
  *)
 
 fun viewIndex () =
-  "<!DOCTYPE html>\n" ^
-  "<html>\n" ^
-  "<head>\n" ^
-  "<title>HATEOAS</title>\n" ^
-  "</head>\n" ^
-  "<body>\n" ^
-  "<h1>Hypermedia As The Engine Of Application State</h1>\n" ^
-  "<p><a href=\"/counter\">Counter</a></p>\n" ^
-  "</body>\n" ^
-  "</html>\n"
+  renderHTML "HATEOAS" (
+    "<header><h1>Hypermedia As The Engine Of Application State</h1></header>" ^
+    "<ul>" ^
+    "<li><a href=\"/counter\">Counter</a></li>" ^
+    "</ul>"
+  )
 
 fun router (req : request): response =
   case (#method req, #path req) of
