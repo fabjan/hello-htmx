@@ -67,7 +67,11 @@ fun statusString code =
     200 => "200 OK"
   | 400 => "400 Bad Request"
   | 404 => "404 Not Found"
-  | _ => "500"
+  | 409 => "409 Conflict"
+  | _ => (
+    print ("cannot translate status code: " ^ (Int.toString code) ^ "\n");
+    "500"
+  )
 
 fun response status contentType body =
   {
