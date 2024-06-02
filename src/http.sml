@@ -19,7 +19,8 @@ datatype 'a result = OK of 'a | Error of string
 type request = {
   method: string,
   path: string,
-  version: string
+  version: string,
+  query: (string * string) list
 }
 
 type response = {
@@ -28,11 +29,38 @@ type response = {
   body: string
 }
 
+fun eq a b = a = b
+
+fun extractPath what =
+  case String.tokens (eq #"?") what of
+    path :: _ => path
+  | _ => what
+
+fun extractQuery what =
+  case String.tokens (eq #"?") what of
+    _ :: query :: _ => query
+  | _ => ""
+
+fun parsePair pair =
+  case String.tokens (eq #"=") pair of
+    key :: value :: _ => (key, value)
+  | _ => (pair, "")
+
+fun parseQuery query =
+  case String.tokens (eq #"&") query of
+    [] => []
+  | pairs => map parsePair pairs
+
 fun decode firstLine =
-    case String.tokens (fn c => c = #" ") firstLine of
-        method :: path :: version :: _ =>
-        OK {method = method, path = path, version = version}
-    | _ => Error "Invalid request"
+  case String.tokens (eq #" ") firstLine of
+    method :: what :: version :: _ =>
+      let
+        val path = extractPath what
+        val query = parseQuery (extractQuery what)
+      in
+        OK {method = method, path = path, version = version, query = query}
+      end
+  | _ => Error "Invalid request"
 
 fun statusString code =
   case code of
@@ -75,20 +103,21 @@ fun handleHTTP sock handler =
     val reqLine = firstLine str
   in
     print (reqLine ^ "\n");
-        let
-            val resp = case decode reqLine of
-                  OK req => handler req
-                | Error msg => (
-                    print ("Invalid request: " ^ msg ^ "\n");
-                    response 400 "text/plain" "Bad request, dude"
-                )
-            val encoded = encode resp
-            val bytes = Byte.stringToBytes encoded
-            val size = Word8Vector.length bytes
-        in
-            print (statusString (#status resp) ^ " (" ^ (Int.toString size) ^ " bytes)\n");
-            Socket.sendVec (sock, Word8VectorSlice.full bytes)
-        end
+    let
+      val resp =
+        case decode reqLine of
+          OK req => handler req
+        | Error msg => (
+          print ("Invalid request: " ^ msg ^ "\n");
+          response 400 "text/plain" "Bad request, dude"
+        )
+      val encoded = encode resp
+      val bytes = Byte.stringToBytes encoded
+      val size = Word8Vector.length bytes
+    in
+      print (statusString (#status resp) ^ " (" ^ (Int.toString size) ^ " bytes)\n");
+      Socket.sendVec (sock, Word8VectorSlice.full bytes)
+    end
   end
 
 fun serveHTTP serverSock handler =
