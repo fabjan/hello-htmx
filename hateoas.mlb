@@ -4,6 +4,7 @@ local
   src/html.sml
 in
   src/counter.sml
+  src/contacts.sml
   src/hateoas.sml
   src/main.sml
 end

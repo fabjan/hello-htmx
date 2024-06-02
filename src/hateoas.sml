@@ -23,12 +23,14 @@ fun viewIndex () =
     "<header><h1>Hypermedia As The Engine Of Application State</h1></header>" ^
     "<ul>" ^
     "<li><a href=\"/counter\">Counter</a></li>" ^
+    "<li><a href=\"/contacts\">Contacts</a></li>" ^
     "</ul>"
   )
 
 fun router (req : request): response =
   case (#method req, #path req) of
     (_, "/counter") => routeCounter req
+  | (_, "/contacts") => routeContacts req
   | ("GET", "/") => response 200 "text/html" (viewIndex ())
   | _ => response 404 "text/plain" "Not found\n"
 
