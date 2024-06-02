@@ -1,8 +1,18 @@
 # HATEOAS
 
-Trying out HTMX.
+Trying out HTMX coding along with ["FULL Introduction To HTMX Using Golang" by FrontEnd Masters](https://www.youtube.com/watch?v=x7v6SNIgJpE)
 
-Following [FULL Introduction To HTMX Using Golang by FrontEnd Masters](https://www.youtube.com/watch?v=x7v6SNIgJpE)
+Using [Water.css](https://watercss.kognise.dev).
+
+### Counter
+![counter example screenshot](counter.png)
+
+### Contacts book
+![contacts example screenshot](contacts.png)
+
+### Scrolling blocks
+![blocks example start screenshot](blocks.start.png)
+![blocks example end screenshot](blocks.end.png)
 
 ## Requirements
 
