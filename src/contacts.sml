@@ -5,8 +5,10 @@ fun newContact name email = { name = name, email = email }
 
 (* TODO: handler state can be immutable if we pass it around *)
 val theContacts = ref [
-  { name = "Alice", email = "alice@example.com" },
-  { name = "Bob", email = "bob@example.com" }
+  newContact "Alice" "alice@example.com",
+  newContact "Bob" "bob@example.com",
+  newContact "Charlie" "charlie@example.com",
+  newContact "David" "david@example.com"
 ]
 
 fun containsEmail needle (haystack : contact list) =
@@ -33,9 +35,9 @@ fun editContact { name, email } (errors : string list) =
 
 (* FIXME: sanitize *)
 fun viewContact { name, email } =
-  "<li id=\"contact-" ^ name ^ "\">" ^
-    "<span hx-indicator=\"#ci-" ^ name ^ "\" hx-target=\"#contact-" ^ name ^ "\" hx-swap=\"outerHTML\" hx-delete=\"/contacts/" ^ name ^ "\" style=\"cursor: pointer\">&#x1F9F9;</span>" ^
+  "<li class=\"contact\" id=\"contact-" ^ name ^ "\">" ^
     name ^ ", " ^ email ^
+    "<span hx-indicator=\"#ci-" ^ name ^ "\" hx-target=\"#contact-" ^ name ^ "\" hx-swap=\"outerHTML swap:500ms\" hx-delete=\"/contacts/" ^ name ^ "\" style=\"cursor: pointer\">&#x1F5D1;</span>" ^
     indicatorSVG ("ci-" ^ name) ^
   "</li>"
 
@@ -115,4 +117,3 @@ fun routeContacts (req : request): response =
   | ("GET", ["contacts"], params) => updateContacts params
   | ("DELETE", ["contacts", name], _) => deleteContact name
   | _ => response 404 "text/plain" "Not found\n"
-

@@ -20,6 +20,10 @@ fun renderHTML title body =
   "      list-style-type: none;" ^
   "      padding: 0;" ^
   "    }" ^
+  "    .contact.htmx-swapping {" ^
+  "      opacity: 0;" ^
+  "      transition: opacity 500ms ease-in;" ^
+  "    }" ^
   "  </style>" ^
   "</head>" ^
   "<body>" ^ body ^ "</body>" ^
