@@ -16,6 +16,10 @@ fun renderHTML title body =
   "    .htmx-request .htmx-indicator {" ^
   "      opacity: 1;" ^
   "    }" ^
+  "    ul.no-bullets {" ^
+  "      list-style-type: none;" ^
+  "      padding: 0;" ^
+  "    }" ^
   "  </style>" ^
   "</head>" ^
   "<body>" ^ body ^ "</body>" ^

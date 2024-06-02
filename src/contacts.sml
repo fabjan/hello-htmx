@@ -40,7 +40,7 @@ fun viewContact { name, email } =
   "</li>"
 
 fun viewContacts contacts =
-  "<ul id=\"contacts\">" ^ String.concat (List.map viewContact contacts) ^ "</ul>"
+  "<ul class=\"no-bullets\" id=\"contacts\">" ^ String.concat (List.map viewContact contacts) ^ "</ul>"
 
 fun oobContact contact =
   "<ul id=\"contacts\" hx-swap-oob=\"afterbegin\">" ^ viewContact contact ^ "</ul>"
