@@ -20,7 +20,7 @@
 
 fun viewIndex () =
   renderHTML "HATEOAS" (
-    "<header><h1>Hypermedia As The Engine Of Application State</h1></header>" ^
+    "<h2>Hypermedia As The Engine Of Application State</h2>" ^
     "<ul>" ^
     "<li><a href=\"/counter\">Counter</a></li>" ^
     "<li><a href=\"/contacts\">Contacts</a></li>" ^

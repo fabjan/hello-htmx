@@ -26,7 +26,10 @@ fun renderHTML title body =
   "    }" ^
   "  </style>" ^
   "</head>" ^
-  "<body>" ^ body ^ "</body>" ^
+  "<body>" ^
+  "<header><h1><a href=\"/\">/</a>" ^ title ^ "</h1></header>" ^
+  body ^
+  "</body>" ^
   "</html>"
 
 fun indicatorSVG id =
