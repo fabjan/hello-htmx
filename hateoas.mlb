@@ -1,0 +1,7 @@
+local
+  $(SML_LIB)/basis/basis.mlb
+  src/http.sml
+in
+  src/hateoas.sml
+  src/main.sml
+end
