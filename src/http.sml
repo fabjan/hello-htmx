@@ -44,6 +44,7 @@ fun extractQuery what =
 fun parsePair pair =
   case String.tokens (eq #"=") pair of
     key :: value :: _ => (key, value)
+  | key :: _ => (key, "")
   | _ => (pair, "")
 
 fun parseQuery query =
