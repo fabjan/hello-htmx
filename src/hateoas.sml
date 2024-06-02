@@ -18,15 +18,29 @@
  * A simple HTTP service.
  *)
 
+fun viewIndex () =
+  "<!DOCTYPE html>\n" ^
+  "<html>\n" ^
+  "<head>\n" ^
+  "<title>HATEOAS</title>\n" ^
+  "</head>\n" ^
+  "<body>\n" ^
+  "<h1>Hypermedia As The Engine Of Application State</h1>\n" ^
+  "<p><a href=\"/counter\">Counter</a></p>\n" ^
+  "</body>\n" ^
+  "</html>\n"
+
 fun router (req : request): response =
   case (#method req, #path req) of
-      ("GET", "/") => response 200 "text/plain" "Hello, World!\n"
-    | _ => response 404 "text/plain" "Not found\n"
+    (_, "/counter") => routeCounter req
+  | ("GET", "/") => response 200 "text/html" (viewIndex ())
+  | _ => response 404 "text/plain" "Not found\n"
 
 fun main () =
   let
     val portOpt = Option.mapPartial Int.fromString (OS.Process.getEnv "PORT")
-    val port = case portOpt of
+    val port =
+      case portOpt of
         NONE => 3000
       | SOME x => x
     val sock = listenTCP port
