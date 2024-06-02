@@ -28,10 +28,10 @@ fun viewIndex () =
   )
 
 fun router (req : request): response =
-  case (#method req, #path req) of
-    (_, "/counter") => routeCounter req
-  | (_, "/contacts") => routeContacts req
-  | ("GET", "/") => response 200 "text/html" (viewIndex ())
+  case (#method req, String.tokens (eq #"/") (#path req)) of
+    (_, "counter"::_) => routeCounter req
+  | (_, "contacts"::_) => routeContacts req
+  | ("GET", []) => response 200 "text/html" (viewIndex ())
   | _ => response 404 "text/plain" "Not found\n"
 
 fun main () =

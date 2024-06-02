@@ -1,3 +1,4 @@
+(* TODO: extra numeric ID? *)
 type contact = { name : string, email : string }
 
 fun newContact name email = { name = name, email = email }
@@ -32,7 +33,10 @@ fun editContact { name, email } (errors : string list) =
 
 (* FIXME: sanitize *)
 fun viewContact { name, email } =
-  "<li>" ^ name ^ ", " ^ email ^ "</li>"
+  "<li id=\"contact-" ^ name ^ "\">" ^
+    "<span hx-target=\"#contact-" ^ name ^ "\" hx-swap=\"outerHTML\" hx-delete=\"/contacts/" ^ name ^ "\" style=\"cursor: pointer\">&#x1F9F9;</span>" ^
+    name ^ ", " ^ email ^
+  "</li>"
 
 fun viewContacts contacts =
   "<ul id=\"contacts\">" ^ String.concat (List.map viewContact contacts) ^ "</ul>"
@@ -40,7 +44,7 @@ fun viewContacts contacts =
 fun oobContact contact =
   "<ul id=\"contacts\" hx-swap-oob=\"afterbegin\">" ^ viewContact contact ^ "</ul>"
 
-fun indexContacts contacts =
+fun indexContacts formData contacts =
   renderHTML "Contacts" (
     "<script>" ^
     "document.addEventListener('DOMContentLoaded', function() {" ^
@@ -53,7 +57,7 @@ fun indexContacts contacts =
     "  });" ^
     "});" ^
     "</script>" ^
-    "<p id=\"insert\">" ^ editContact (newContact "" "") [] ^ "</p>" ^
+    "<p id=\"insert\">" ^ editContact formData [] ^ "</p>" ^
     viewContacts contacts
   )
 
@@ -68,6 +72,8 @@ fun parseEmail s =
   end
 
 local
+(* FIXME: empty name should not be allowed *)
+(* FIXME: duplicate name should not be allowed, maybe? *)
 fun updateContacts' name email =
   let
     val email = parseEmail email
@@ -87,9 +93,23 @@ fun updateContacts [("name", name), ("email", email)] = updateContacts' name ema
   | updateContacts _ = response 400 "text/plain" "Bad request\n"
 end
 
+fun deleteContact name =
+  let
+    val contacts = !theContacts
+    val contacts' = List.filter (fn c => not (eq (#name c) name)) contacts
+  in
+    if List.length contacts = List.length contacts'
+    then response 404 "text/plain" "Not found\n"
+    else (
+      theContacts := contacts';
+      response 200 "text/html" "<!-- deleted -->"
+    )
+  end
+
 fun routeContacts (req : request): response =
-  case (#method req, #path req, #query req) of
-    ("GET", "/contacts", []) => response 200 "text/html" (indexContacts (!theContacts))
-  | ("GET", "/contacts", params) => updateContacts params
+  case (#method req, (String.tokens (eq #"/") (#path req)), #query req) of
+    ("GET", ["contacts"], []) => response 200 "text/html" (indexContacts (newContact "" "") (!theContacts))
+  | ("GET", ["contacts"], params) => updateContacts params
+  | ("DELETE", ["contacts", name], _) => deleteContact name
   | _ => response 404 "text/plain" "Not found\n"
 
