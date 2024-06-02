@@ -103,6 +103,7 @@ fun firstLine str =
 
 fun handleHTTP sock handler =
   let
+    val t0 = Time.now ()
     val bytes = Socket.recvVec (sock, 1024)
     val str = Byte.bytesToString bytes
     val reqLine = firstLine str
@@ -119,8 +120,10 @@ fun handleHTTP sock handler =
       val encoded = encode resp
       val bytes = Byte.stringToBytes encoded
       val size = Word8Vector.length bytes
+      val t1 = Time.now ()
+      val elapsedMicros = Time.toMicroseconds (Time.-(t1, t0))
     in
-      print (statusString (#status resp) ^ " (" ^ (Int.toString size) ^ " bytes)\n");
+      print (statusString (#status resp) ^ " (" ^ (Int.toString size) ^ " bytes in " ^ (LargeInt.toString elapsedMicros) ^ " micros)\n");
       Socket.sendVec (sock, Word8VectorSlice.full bytes)
     end
   end
