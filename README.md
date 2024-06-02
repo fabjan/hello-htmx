@@ -1,6 +1,8 @@
 # HATEOAS
 
-Trying out HTMX
+Trying out HTMX.
+
+Following [FULL Introduction To HTMX Using Golang by FrontEnd Masters](https://www.youtube.com/watch?v=x7v6SNIgJpE)
 
 ## Requirements
 
