@@ -45,6 +45,6 @@ fun main () =
       | SOME x => x
     val sock = listenTCP port
   in
-    print ("Listening on port " ^ (Int.toString port) ^ "\n");
+    print ("Serving at http://localhost:" ^ (Int.toString port) ^ "\n");
     serveHTTP sock router
   end
