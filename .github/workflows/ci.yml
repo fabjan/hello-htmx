@@ -18,7 +18,7 @@ jobs:
         run: |
           wget https://github.com/diku-dk/smlpkg/releases/download/v0.1.4/smlpkg-bin-dist-linux.tgz
           tar xzf smlpkg-bin-dist-linux.tgz
-          echo "$HOME/smlpkg-bin-dist-linux/bin" >> $GITHUB_PATH
+          echo "$(pwd)/smlpkg-bin-dist-linux/bin" >> $GITHUB_PATH
 
       - name: Install Compiler
         run: |
