@@ -14,13 +14,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install smlpkg
+        run: |
+          wget https://github.com/diku-dk/smlpkg/releases/download/v0.1.4/smlpkg-bin-dist-linux.tgz
+          tar xzf smlpkg-bin-dist-linux.tgz
+          echo "$HOME/smlpkg-bin-dist-linux/bin" >> $GITHUB_PATH
+
       - name: Install Compiler
         run: |
           sudo apt-get install -y polyml libpolyml-dev
           poly -v
 
       - name: Build
-        run: ./build.sh
+        run: |
+          smlpkg --version
+          smlpkg sync
+          ./build.sh
 
       - name: Run tests
         run: ./test.sh
