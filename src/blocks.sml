@@ -21,8 +21,8 @@ fun viewBlocks start =
     (String.concat blocks) ^ (viewMore more next)
   end
 
-fun getBlocksFrom NONE = response Http.StatusCode.BadRequest "text/plain" "Bad request\n"
-  | getBlocksFrom (SOME start) = response Http.StatusCode.OK "text/html" (viewBlocks start)
+fun getBlocksFrom NONE = response Http.Status.BadRequest "text/plain" "Bad request\n"
+  | getBlocksFrom (SOME start) = response Http.Status.Ok "text/html" (viewBlocks start)
 
 fun indexBlocks () =
   renderHTML "Blocks" (
@@ -31,10 +31,10 @@ fun indexBlocks () =
     "</div>"
   )
 
-fun routeBlocks method path (req : Smelly.request): Smelly.response =
-  case (method, path, Smelly.parseQuery req) of
-    (Http.Request.GET, ["blocks"], []) => response Http.StatusCode.OK "text/html" (indexBlocks ())
-  | (Http.Request.GET, ["blocks"], [("start", start)]) => getBlocksFrom (Int.fromString start)
-  | (_, ["blocks"], _) => response Http.StatusCode.BadRequest "text/plain" "Bad request\n"
-  | _ => response Http.StatusCode.NotFound "text/plain" "Not found\n"
+fun routeBlocks method path (req : Http.Request.t): Http.Response.t =
+  case (method, path, #query req) of
+    (Http.Method.Get, ["blocks"], []) => response Http.Status.Ok "text/html" (indexBlocks ())
+  | (Http.Method.Get, ["blocks"], [("start", start)]) => getBlocksFrom (Int.fromString start)
+  | (_, ["blocks"], _) => response Http.Status.BadRequest "text/plain" "Bad request\n"
+  | _ => response Http.Status.NotFound "text/plain" "Not found\n"
 
