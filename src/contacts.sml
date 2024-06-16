@@ -12,7 +12,7 @@ val theContacts = ref [
 ]
 
 fun containsEmail needle (haystack : contact list) =
-  List.exists (eq needle) (List.map #email haystack)
+  List.exists (fn m => m = needle) (List.map #email haystack)
 
 fun addContact contact =
   let
@@ -83,37 +83,37 @@ fun updateContacts' name email =
     val contact = newContact name email
   in
     if containsEmail email (!theContacts)
-    then response 409 "text/html" (editContact contact ["Email already exists"])
+    then response Http.StatusCode.BadRequest "text/html" (editContact contact ["Email already exists"])
     else (
       addContact contact;
       (* return the form, but also update out of band *)
-      response 200 "text/html" ((editContact contact []) ^ (oobContact contact))
+      response Http.StatusCode.OK "text/html" ((editContact contact []) ^ (oobContact contact))
     )
   end
 in
 fun updateContacts [("name", name), ("email", email)] = updateContacts' name email
   | updateContacts [("email", email), ("name", name)] = updateContacts' name email
-  | updateContacts _ = response 400 "text/plain" "Bad request\n"
+  | updateContacts _ = response Http.StatusCode.BadRequest "text/plain" "Bad request\n"
 end
 
 fun deleteContact name =
   let
     val contacts = !theContacts
-    val contacts' = List.filter (fn c => not (eq (#name c) name)) contacts
+    val contacts' = List.filter (fn c => not ((#name c) = name)) contacts
     (* hack to simulate slow response, showcasing interactivity *)
     val _ = OS.Process.sleep (Time.fromMilliseconds 1337)
   in
     if List.length contacts = List.length contacts'
-    then response 404 "text/plain" "Not found\n"
+    then response Http.StatusCode.NotFound "text/plain" "Not found\n"
     else (
       theContacts := contacts';
-      response 200 "text/html" "<!-- deleted -->"
+      response Http.StatusCode.OK "text/html" "<!-- deleted -->"
     )
   end
 
-fun routeContacts (req : request): response =
-  case (#method req, (String.tokens (eq #"/") (#path req)), #query req) of
-    ("GET", ["contacts"], []) => response 200 "text/html" (indexContacts (newContact "" "") (!theContacts))
-  | ("GET", ["contacts"], params) => updateContacts params
-  | ("DELETE", ["contacts", name], _) => deleteContact name
-  | _ => response 404 "text/plain" "Not found\n"
+fun routeContacts method path (req : Smelly.request): Smelly.response =
+  case (method, path, Smelly.parseQuery req) of
+    (Http.Request.GET, ["contacts"], []) => response Http.StatusCode.OK "text/html" (indexContacts (newContact "" "") (!theContacts))
+  | (Http.Request.GET, ["contacts"], params) => updateContacts params
+  | (Http.Request.DELETE, ["contacts", name], _) => deleteContact name
+  | _ => response Http.StatusCode.NotFound "text/plain" "Not found\n"

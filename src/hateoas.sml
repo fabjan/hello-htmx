@@ -28,13 +28,19 @@ fun viewIndex () =
     "</ul>"
   )
 
-fun router (req : request): response =
-  case (#method req, String.tokens (eq #"/") (#path req)) of
-    (_, "counter"::_) => routeCounter req
-  | (_, "contacts"::_) => routeContacts req
-  | (_, "blocks"::_) => routeBlocks req
-  | ("GET", []) => response 200 "text/html" (viewIndex ())
-  | _ => response 404 "text/plain" "Not found\n"
+fun router (req : Smelly.request): Smelly.response =
+  let
+    val method = Smelly.method req
+    val path = Smelly.path req
+    val path = String.tokens (fn c => c = #"/") path
+  in
+    case (method, path) of
+      (_, "counter"::_) => routeCounter method path req
+    | (_, "contacts"::_) => routeContacts method path req
+    | (_, "blocks"::_) => routeBlocks method path req
+    | (Http.Request.GET, []) => response Http.StatusCode.OK "text/html" (viewIndex ())
+    | _ => response Http.StatusCode.NotFound "text/plain" "Not found\n"
+  end
 
 fun main () =
   let
@@ -43,8 +49,11 @@ fun main () =
       case portOpt of
         NONE => 3000
       | SOME x => x
-    val sock = listenTCP port
+    val sock = INetSock.TCP.socket () : Smelly.listen_sock
   in
+    Socket.Ctl.setREUSEADDR (sock, true);
+    Socket.bind (sock, INetSock.any port);
+    Socket.listen (sock, 5);
     print ("Serving at http://localhost:" ^ (Int.toString port) ^ "\n");
-    serveHTTP sock router
+    Smelly.serve sock router
   end

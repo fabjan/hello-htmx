@@ -18,14 +18,14 @@ fun viewPage counter =
     "<button hx-post=\"/counter\" hx-target=\"#counter\">Increment</button>"
   )
 
-fun htmlResponse s = response 200 "text/html" s
+fun htmlResponse s = response Http.StatusCode.OK "text/html" s
 
-fun routeCounter (req : request): response =
-  case (#method req, #path req) of
-    ("GET", "/counter") => htmlResponse (viewPage (!theCounter))
-  | ("POST", "/counter") => (
+fun routeCounter method path _ : Smelly.response =
+  case (method, path) of
+    (Http.Request.GET, ["counter"]) => htmlResponse (viewPage (!theCounter))
+  | (Http.Request.POST, ["counter"]) => (
       incrementCounter 1;
       htmlResponse (viewCounter (!theCounter))
     )
-  | _ => response 404 "text/plain" "Not found\n"
+  | _ => response Http.StatusCode.NotFound "text/plain" "Not found\n"
 
