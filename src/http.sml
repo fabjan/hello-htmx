@@ -1,4 +1,6 @@
-fun response status contentType body =
+structure Http = Smelly.Http
+
+fun response status contentType body : Http.Response.t =
   let
     val length = String.size body
     val headers = [
@@ -6,5 +8,5 @@ fun response status contentType body =
       ("Content-Length", Int.toString length)
     ]
   in
-    Smelly.mkResponse status headers body
+    Http.Response.mk status headers body
   end

@@ -64,36 +64,25 @@ fun indexContacts formData contacts =
     viewContacts contacts
   )
 
-fun parseEmail s =
-  let
-    (* FIXME: this is not right *)
-    fun parse (#"%" :: #"4" :: #"0" :: rest) = #"@" :: rest
-      | parse (c :: rest) = c :: parse rest
-      | parse [] = []
-  in
-    String.implode (parse (String.explode s))
-  end
-
 local
 (* FIXME: empty name should not be allowed *)
 (* FIXME: duplicate name should not be allowed, maybe? *)
 fun updateContacts' name email =
   let
-    val email = parseEmail email
     val contact = newContact name email
   in
     if containsEmail email (!theContacts)
-    then response Http.StatusCode.BadRequest "text/html" (editContact contact ["Email already exists"])
+    then response Http.Status.BadRequest "text/html" (editContact contact ["Email already exists"])
     else (
       addContact contact;
       (* return the form, but also update out of band *)
-      response Http.StatusCode.OK "text/html" ((editContact contact []) ^ (oobContact contact))
+      response Http.Status.Ok "text/html" ((editContact contact []) ^ (oobContact contact))
     )
   end
 in
 fun updateContacts [("name", name), ("email", email)] = updateContacts' name email
   | updateContacts [("email", email), ("name", name)] = updateContacts' name email
-  | updateContacts _ = response Http.StatusCode.BadRequest "text/plain" "Bad request\n"
+  | updateContacts _ = response Http.Status.BadRequest "text/plain" "Bad request\n"
 end
 
 fun deleteContact name =
@@ -104,16 +93,16 @@ fun deleteContact name =
     val _ = OS.Process.sleep (Time.fromMilliseconds 1337)
   in
     if List.length contacts = List.length contacts'
-    then response Http.StatusCode.NotFound "text/plain" "Not found\n"
+    then response Http.Status.NotFound "text/plain" "Not found\n"
     else (
       theContacts := contacts';
-      response Http.StatusCode.OK "text/html" "<!-- deleted -->"
+      response Http.Status.Ok "text/html" "<!-- deleted -->"
     )
   end
 
-fun routeContacts method path (req : Smelly.request): Smelly.response =
-  case (method, path, Smelly.parseQuery req) of
-    (Http.Request.GET, ["contacts"], []) => response Http.StatusCode.OK "text/html" (indexContacts (newContact "" "") (!theContacts))
-  | (Http.Request.GET, ["contacts"], params) => updateContacts params
-  | (Http.Request.DELETE, ["contacts", name], _) => deleteContact name
-  | _ => response Http.StatusCode.NotFound "text/plain" "Not found\n"
+fun routeContacts method path (req : Http.Request.t): Http.Response.t =
+  case (method, path, #query req) of
+    (Http.Method.Get, ["contacts"], []) => response Http.Status.Ok "text/html" (indexContacts (newContact "" "") (!theContacts))
+  | (Http.Method.Get, ["contacts"], params) => updateContacts params
+  | (Http.Method.Delete, ["contacts", name], _) => deleteContact name
+  | _ => response Http.Status.NotFound "text/plain" "Not found\n"

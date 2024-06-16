@@ -28,18 +28,18 @@ fun viewIndex () =
     "</ul>"
   )
 
-fun router (req : Smelly.request): Smelly.response =
+fun router (req : Http.Request.t): Http.Response.t =
   let
-    val method = Smelly.method req
-    val path = Smelly.path req
+    val method = #method req
+    val path = #path req
     val path = String.tokens (fn c => c = #"/") path
   in
     case (method, path) of
       (_, "counter"::_) => routeCounter method path req
     | (_, "contacts"::_) => routeContacts method path req
     | (_, "blocks"::_) => routeBlocks method path req
-    | (Http.Request.GET, []) => response Http.StatusCode.OK "text/html" (viewIndex ())
-    | _ => response Http.StatusCode.NotFound "text/plain" "Not found\n"
+    | (Http.Method.Get, []) => response Http.Status.Ok "text/html" (viewIndex ())
+    | _ => response Http.Status.NotFound "text/plain" "Not found\n"
   end
 
 fun main () =

@@ -1,5 +1,10 @@
+# build crap
 _build/
 a.out
 polybuild
 
+# smlpkg stuffz
 lib/
+
+# test crap
+*.output

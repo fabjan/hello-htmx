@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install smlpkg
+        run: |
+          wget https://github.com/diku-dk/smlpkg/releases/download/v0.1.4/smlpkg-bin-dist-linux.tgz
+          tar xzf smlpkg-bin-dist-linux.tgz
+          echo "$(pwd)/smlpkg-bin-dist-linux/bin" >> $GITHUB_PATH
+
+      - name: Install Compiler
+        run: |
+          sudo apt-get install -y polyml libpolyml-dev
+          poly -v
+
+      - name: Build
+        run: |
+          smlpkg --version
+          smlpkg sync
+          ./build.sh
+
+      - name: Run tests
+        run: ./test.sh
