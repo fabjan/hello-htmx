@@ -2,6 +2,7 @@
 FROM ubuntu:20.04
 RUN apt-get update && apt-get install -y mlton
 
+COPY lib lib
 COPY src src
 COPY *.mlb polybuild.sml build.sh .
 

@@ -55,6 +55,12 @@ build () {
     esac
 }
 
+if [ ! -d "lib" ] && [ -f "sml.pkg" ]
+then
+    log "Syncing dependencies"
+    smlpkg sync
+fi
+
 mkdir -p $BUILD_DIR
 for build_file in *.mlb; do
     build "$build_file"

@@ -17,9 +17,11 @@ Using [Water.css](https://watercss.kognise.dev).
 ## Requirements
 
 * [Poly/ML] or [MLton]
+* [smlpkg]
 
 [Poly/ML]: https://www.polyml.org
 [MLton]: http://mlton.org
+[smlpkg]: https://github.com/diku-dk/smlpkg
 
 ## Building
 
@@ -30,7 +32,7 @@ A local build:
 
 Build a container image:
 ```
-podman build . -t hateoas
+./build.container.sh
 ```
 
 ## Running
